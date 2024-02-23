@@ -1,0 +1,198 @@
+--lets change the table from null to not null
+alter table walmartdata
+alter column InvoiceID nvarchar(50) not null
+alter column Branch nvarchar(50) not null
+alter column City nvarchar(50) not null
+alter column CustomerType  nvarchar(50) not null
+alter column Gender nvarchar(50) not null
+alter column ProductLine nvarchar(50) not null
+alter column UnitPrice nvarchar(50) not null
+alter column Quantity nvarchar(50) not null
+alter column Tax5% nvarchar(50) not null
+alter column Total nvarchar(50) not null
+alter column Date nvarchar(50) not null
+alter column Time nvarchar(50) not null
+alter column Payment nvarchar(50) not null
+alter column cogs nvarchar(50) not null
+alter column GrossMarginPercentage nvarchar(50) not null
+alter column GrossIncome nvarchar(50) not null
+alter column Rating nvarchar(50) not null
+--------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------
+select 
+[Time] ,
+    
+ (case
+          when 'time' between '00:00:00' and '12:00:00' then 'Morning'
+	      when 'time' between '12:01:00' and '17:00:00' then 'Afternoon'
+		  when 'time' between '17:01:00' and '19:00:00' then 'Evening'
+		  else 'Night'
+		  end) Time_of_day
+from walmartdata
+---------------------------------------------------------------------------------------------------------------------------------
+
+alter table [dbo].[WalmartData]
+add TimeOfDay nvarchar (50)
+
+--update [dbo].[WalmartData]
+--set TimeOfDay = (case
+ --         when '[Time]' between '00:01:00' and '12:00:00' then 'Morning'
+--	      when '[Time]' between '12:01:00' and '17:00:00' then 'Afternoon'
+--		  when '[Time]' between '17:01:00' and '19:00:00' then 'Evening'
+--		  when '[Time]' between '10:01:00' and  '24:00:00' then 'Night'
+--		  end)
+
+  UPDATE   [dbo].[WalmartData]
+ set TimeOfDay = case when left(Time,2) = '00'  then 'Morning' 
+                  when left(Time,2) = '01'  then 'Morning' 
+				  when left(Time,2) = '02'  then 'Morning' 
+				  when left(Time,2) = '03'  then 'Morning' 
+				  when left(Time,2) = '04'  then 'Morning' 
+				  when left(Time,2) = '05'  then 'Morning' 
+				  when left(Time,2) = '06'  then 'Morning' 
+				  when left(Time,2) = '07'  then 'Morning' 
+				  when left(Time,2) = '08'  then 'Morning' 
+				  when left(Time,2) = '09'  then 'Morning' 
+				  when left(Time,2) = '10'  then 'Morning' 
+				  when left(Time,2) = '11'  then 'Morning' 
+				  when left(Time,2) = '12'  then 'Morning' 
+				  when left(Time,2) = '13'  then 'Afternoon'
+                  when left(Time,2) = '14'  then 'Afternoon' 
+				  when left(Time,2) = '15'  then 'Afternoon'
+                  when left(Time,2) = '16'  then 'Afternoon' 
+				  when left(Time,2) = '17'  then 'Afternoon'
+                  when left(Time,2) = '18'  then 'Afternoon' 
+				  when left(Time,2) = '19'  then 'Night'
+                  when left(Time,2) = '20'  then 'Night' 
+			      when left(Time,2) = '21'  then 'Night'
+                  when left(Time,2) = '22'  then 'Night' 
+				  when left(Time,2) = '23'  then 'Night'
+                  when left(Time,2) = '24'  then 'Night'
+                  end;
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+SELECT DATE, DATENAME(WEEKDAY, [Date]) 
+FROM WALMARTDATA
+ 
+ ALTER  table[dbo].[WalmartData]
+ add  weekday nvarchar(10)
+
+ update [dbo].[WalmartData]
+set weekday =DATENAME(WEEKDAY, [Date]) 
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+
+SELECT DATE, DATENAME(MONTH, [Date]) 
+FROM WALMARTDATA
+ 
+ ALTER  table[dbo].[WalmartData]
+ add  month nvarchar(20)
+
+ update [dbo].[WalmartData]
+set month =DATENAME(MONTH, [Date]) 
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+ select*
+ from walmartdata
+
+
+
+ --------------------------------------------------------------------------------------------------------------------------------
+--Business Question 
+--------------------------------------------------------------------------------------------------------------------------------
+select * from walmartdata
+--------------------------------------------------------------------------------------------------------------------------------
+select gender,count(InvoiceID)
+from walmartdata 
+group by  gender
+--------------------------------------------------------------------------------------------------------------------------------
+--Types of Products
+select productLine,count(InvoiceID) as NoOfUnits
+from walmartData
+group by ProductLine
+
+--------------------------------------------------------------------------------------------------------------------------------
+--Type of Payment
+
+select  [Payment],count(InvoiceID) as NoOfTimesUsed
+from Walmartdata
+group by payment
+order by payment desc
+
+--------------------------------------------------------------------------------------------------------------------------------
+--Most Sold Product type
+--Types of Products
+select top 1  productLine,count(InvoiceID) as NoOfUnits
+from walmartData
+group by ProductLine
+
+--------------------------------------------------------------------------------------------------------------------------------
+--revenue per month
+select round(total,0) as total1
+from WalmartData
+
+
+alter table [dbo].[WalmartData]
+add  totalsum int 
+
+ update [dbo].[WalmartData]
+set totalsum =round(total,0)
+
+select MONTH,Sum(Totalsum) as revenue
+from walmartdata
+group by month
+order by month desc
+
+--------------------------------------------------------------------------------------------------------------------------------
+--what product line has highest  average tax
+
+select round(tax5,0) as tax
+from WalmartData
+
+
+alter table [dbo].[WalmartData]
+add  tax int 
+
+ update [dbo].[WalmartData]
+set tax =round(total,0)
+
+
+select [ProductLine] , avg(Tax) AvgOrderValue
+from [dbo].[WalmartData]
+group by productline
+
+--------------------------------------------------------------------------------------------------------------------------------
+alter table [dbo].[WalmartData]
+add  rating decimal(20,2)
+
+
+select
+[ProductLine] , avg(rating) as avgRating
+from [dbo].[WalmartData]
+group by ProductLine
+order by avgRating desc
+
+
+--------------------------------------------------------------------------------------------------------------------------------
+--which Customer type brings the most revenue
+
+alter table [dbo].[WalmartData]
+alter column total decimal(30,5)
+
+
+
+select [CustomerType],sum(total) as revenue
+from [dbo].[WalmartData]
+group by CustomerType
+order by 2 desc
+
+--------------------------------------------------------------------------------------------------------------------------------
+--Average rating per weekday
+
+select
+[weekday],AVG(rating)
+from WalmartData
+group by weekday
